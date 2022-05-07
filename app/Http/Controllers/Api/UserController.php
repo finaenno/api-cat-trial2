@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Exception;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Laravel\Fortify\Rules\Password;
@@ -97,27 +98,28 @@ class UserController extends Controller
                 'profile_photo_path' => ['nullable','image']
             ]);
 
-            // if($validation->fails()){
-            //     $error = $validation->errors()->all()[0];
-            //     return ResponseFormatter::error([
-            //         'message' => 'Profile Failed to change',
-            //         'error' => $error
-            //     ], 'Profile Failed to change',422);
-            // }else{
+            if($validation->fails()){
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Profile Failed to change',
+                    'error' => $error
+                ], 'Profile Failed to change',422);
+            }else{
                 $user = User::find($request->user()->id);
                 $user->name = $request->name;
                 $user->username = $request->username;
                 $user->phone_number = $request->phone_number;
                 $user->email = $request->email;
-            //     if($request->profile_photo_path && $request->profile_photo_path->isValid()){
-            //         $fileName = time().'.'.$request->profile_photo_path->extension();
-            //         $request->profile_photo_path->move(public_path('images/user'), $fileName);
-            //         $path = "public/images/user/$fileName";
-            //         $user->profile_photo_path = $path;
-            //     }
+                if($request->profile_photo_path && $request->profile_photo_path->isValid()){
+                    $slug = Str::slug($request->username);
+                    $fileName = 'photo-'.$slug.'-'.time().'.'.$request->profile_photo_path->extension();
+                    $request->profile_photo_path->storeAs('public/profile-photos', $fileName);
+                    $path = "profile-photos/$fileName";
+                    $user->profile_photo_path = $path;
+                }
                 $user->update();
                 return ResponseFormatter::success($user, 'Profile Updated');
-            // }
+            }
         } catch (Exception $error) {
             return ResponseFormatter::error([
                 'message' => 'Something went wrong',
