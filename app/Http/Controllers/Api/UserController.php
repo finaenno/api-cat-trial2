@@ -85,7 +85,8 @@ class UserController extends Controller
     }
 
     public function show(Request $request){
-        return ResponseFormatter::success($request->user(), 'User data retrieved successfully');
+        $user = User::with('cats')->find($request->user());
+        return ResponseFormatter::success($user, 'User data retrieved successfully');
     }
 
     public function profile(Request $request){
