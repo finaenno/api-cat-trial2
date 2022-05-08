@@ -65,4 +65,8 @@ class User extends Authenticatable
     public function cats(){
         return $this->hasMany('App\Models\Cats');
     }
+
+    public function posts(){
+        return $this->hasMany('App\Models\Post');
+    }
 }

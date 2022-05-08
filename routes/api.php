@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\CatController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\LoveController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -37,6 +39,21 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::delete('delete',[PostController::class,'destroy']);
         Route::post('update',[PostController::class,'update']);
     });
+
+    // Loves
+    Route::prefix('love/')->group(function(){
+        Route::get('all',[LoveController::class,'all']);
+        Route::post('create',[LoveController::class,'store']);
+        Route::delete('delete',[LoveController::class,'destroy']);
+    });
+
+    Route::prefix('comment/')->group(function () {
+        Route::get('all', [CommentController::class, 'all']);
+        Route::post('create', [CommentController::class, 'store']);
+        Route::post('update', [CommentController::class, 'update']);
+        Route::delete('delete', [CommentController::class, 'destroy']);
+    });
+
 });
 
 Route::post('register',[UserController::class,'register']);

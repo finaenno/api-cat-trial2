@@ -20,7 +20,7 @@ class PostController extends Controller
         $user_id = $request->input('user_id');
 
         if ($id) {
-            $post = Post::with('user')->find($id);
+            $post = Post::with(['user','loves','comments'])->find($id);
             if ($post) {
                 return ResponseFormatter::success(
                     $post,
@@ -35,7 +35,7 @@ class PostController extends Controller
             }
         }
 
-        $post = Post::with('user');
+        $post = Post::withCount(['user','loves','comments']);
 
         if ($user_id) {
             $post->where('user_id', $user_id);
