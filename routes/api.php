@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CatController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,14 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('create',[CatController::class,'store']);
         Route::delete('delete',[CatController::class,'destroy']);
         Route::post('update',[CatController::class,'update']);
+    });
+
+    // Posts
+    Route::prefix('post/')->group(function(){
+        Route::get('all',[PostController::class,'all']);
+        Route::post('create',[PostController::class,'store']);
+        Route::delete('delete',[PostController::class,'destroy']);
+        Route::post('update',[PostController::class,'update']);
     });
 });
 
