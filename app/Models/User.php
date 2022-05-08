@@ -69,4 +69,8 @@ class User extends Authenticatable
     public function posts(){
         return $this->hasMany('App\Models\Post');
     }
+
+    public function followers(){
+        return $this->hasMany('App\Models\UserFollower','user_id');
+    }
 }
