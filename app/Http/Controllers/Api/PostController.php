@@ -56,7 +56,7 @@ class PostController extends Controller
                 'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
                 'description' => ['required', 'string'],
                 'lat' => ['nullable'],
-                'long' => ['nullable'],
+                'lon' => ['nullable'],
             ]);
 
             if ($validation->fails()) {
@@ -77,7 +77,7 @@ class PostController extends Controller
                     'photo' => $path,
                     'description' => $request->description,
                     'lat' => $request->lat,
-                    'long' => $request->long,
+                    'lon' => $request->lon,
                 ]);
                 return ResponseFormatter::success($post, 'Data added successfully');
             }
@@ -120,7 +120,7 @@ class PostController extends Controller
                     'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
                     'description' => ['required', 'string'],
                     'lat' => ['nullable'],
-                    'long' => ['nullable'],
+                    'lon' => ['nullable'],
                 ]);
                 if ($validation->fails()) {
                     $error = $validation->errors()->all()[0];
@@ -133,7 +133,7 @@ class PostController extends Controller
                         $post->photo = $request->photo;
                         $post->description = $request->description;
                         $post->lat = $request->lat;
-                        $post->long = $request->long;
+                        $post->lon = $request->lon;
                         if ($request->photo && $request->photo->isValid()) {
                             $slug = Str::slug($request->user()->username);
                             $fileName = 'photo-' . $slug . '-' . time() . '.' . $request->photo->extension();
