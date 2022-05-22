@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('photo');
             $table->text('description');
-            $table->double('lat', 10,7)->nullable();
-            $table->double('long',10,7)->nullable();
+            $table->double('lat', 6,2)->nullable();
+            $table->double('lon',6,2)->nullable();
             $table->timestamps();
         });
     }
