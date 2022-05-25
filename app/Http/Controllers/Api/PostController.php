@@ -54,6 +54,7 @@ class PostController extends Controller
         try {
             $validation = Validator::make($request->all(), [
                 'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
+                'title' => ['required', 'string'],
                 'description' => ['required', 'string'],
                 'lat' => ['nullable'],
                 'lon' => ['nullable'],
@@ -75,6 +76,7 @@ class PostController extends Controller
                 $post = Post::create([
                     'user_id' => $request->user()->id,
                     'photo' => $path,
+                    'title' => $request->title,
                     'description' => $request->description,
                     'lat' => $request->lat,
                     'lon' => $request->lon,
@@ -118,6 +120,7 @@ class PostController extends Controller
                 $post = Post::find($id);
                 $validation = Validator::make($request->all(), [
                     'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
+                    'title' => ['required', 'string'],
                     'description' => ['required', 'string'],
                     'lat' => ['nullable'],
                     'lon' => ['nullable'],
@@ -131,6 +134,7 @@ class PostController extends Controller
                 } else {
                     if ($post) {
                         $post->photo = $request->photo;
+                        $post->title = $request->title;
                         $post->description = $request->description;
                         $post->lat = $request->lat;
                         $post->lon = $request->lon;
