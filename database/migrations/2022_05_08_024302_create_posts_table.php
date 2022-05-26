@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('photo');
+            $table->string('title');
             $table->text('description');
-            $table->double('lat', 10,7)->nullable();
-            $table->double('long',10,7)->nullable();
+            $table->double('lat', 6,2)->nullable();
+            $table->double('lon',6,2)->nullable();
             $table->timestamps();
         });
     }

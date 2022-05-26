@@ -7,6 +7,7 @@ use App\Models\Love;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class LoveController extends Controller
 {
@@ -67,13 +68,15 @@ class LoveController extends Controller
 
     public function destroy(Request $request)
     {
-        $id = $request->input('id');
-
-        if ($id) {
-            $love = Love::destroy($id);
-            if ($love) {
+        $loves = Love::where([
+            ['post_id', $request->input('post_id')],
+            ['user_id', $request->input('user_id')],
+        ]);
+        if ($loves) {
+            $loves->delete();
+            if ($loves) {
                 return ResponseFormatter::success(
-                    $love,
+                    $loves,
                     'data deleted successfully'
                 );
             } else {

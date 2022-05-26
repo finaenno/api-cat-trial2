@@ -15,7 +15,6 @@ class CommentController extends Controller
     public function all(Request $request)
     {
         $id = $request->input('id');
-        $limit = $request->input('limit');
         $post_id = $request->input('post_id');
         $user_id = $request->input('user_id');
 
@@ -46,7 +45,7 @@ class CommentController extends Controller
         }
 
         return ResponseFormatter::success(
-            $comment->paginate($limit),
+            $comment->get(),
             'Comment data successfully retrieved'
         );
     }
