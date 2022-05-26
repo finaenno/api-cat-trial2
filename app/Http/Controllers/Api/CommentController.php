@@ -74,7 +74,7 @@ class CommentController extends Controller
                     'description' => $request->description
                 ]);
                 return ResponseFormatter::success($comment, 'Data added successfully');
-            }
+            }                                                           
 
         } catch (Exception $error) {
             return ResponseFormatter::error([
