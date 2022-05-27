@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LoveController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\MessagesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::delete('delete',[LoveController::class,'destroy']);
     });
 
+    //Comment
     Route::prefix('comment/')->group(function () {
         Route::get('all', [CommentController::class, 'all']);
         Route::post('create', [CommentController::class, 'store']);
@@ -54,6 +56,11 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::delete('delete', [CommentController::class, 'destroy']);
     });
 
+    //Messages
+    Route::prefix('messages/')->group(function(){
+        Route::get('getAll', [MessagesController::class, 'index']);
+        Route::post('create', [MessagesController::class, 'store']);
+    });
 });
 
 Route::post('register',[UserController::class,'register']);
