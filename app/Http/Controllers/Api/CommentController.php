@@ -65,9 +65,7 @@ class CommentController extends Controller
                     'error' => $error
                 ], 'Failed to add data', 422);
             }else{
-                $comment = Comment::updateOrCreate([
-                    'post_id' => $request->post_id
-                ],[
+                $comment = Comment::create([
                     'post_id' => $request->post_id,
                     'user_id' => $request->user()->id,
                     'description' => $request->description
