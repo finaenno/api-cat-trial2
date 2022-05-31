@@ -16,7 +16,6 @@ class PostController extends Controller
     public function all(Request $request)
     {
         $id = $request->input('id');
-        $limit = $request->input('limit');
         $user_id = $request->input('user_id');
 
         if ($id) {
