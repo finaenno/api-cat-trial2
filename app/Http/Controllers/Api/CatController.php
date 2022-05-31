@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Album;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -15,7 +16,6 @@ class CatController extends Controller
 {
     public function all(Request $request){
         $id = $request->input('id');
-        $limit = $request->input('limit');
         $user_id = $request->input('user_id');
         $name = $request->input('name');
         $breed = $request->input('breed');
@@ -47,7 +47,6 @@ class CatController extends Controller
 
         if($name){
             $cat->where('name','like','%'.$name.'%');
-
         }
         if($breed){
             $cat->where('breed','like','%'.$breed.'%');
@@ -66,7 +65,7 @@ class CatController extends Controller
         }
 
         return ResponseFormatter::success(
-            $cat->paginate($limit),
+            $cat->get(),
             'cat data successfully retrieved'
         );
     }
@@ -76,7 +75,7 @@ class CatController extends Controller
             $validation = Validator::make($request->all(), [
                 'name' => ['required', 'string', 'max:255'],
                 'breed' => ['required', 'string', 'max:255'],
-                'gender' => ['required', 'max:255','in:male,female'],
+                'gender' => ['required', 'max:255'],
                 'color' => ['required', 'string', 'max:255'],
                 'weight' => ['required','regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
                 'age' => ['required', 'integer'],
@@ -117,6 +116,51 @@ class CatController extends Controller
                 'error' => $error
             ], 'Authentication Failed', 500);
         }
+    }
+
+    public function createAlbum(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => ['required'],
+                'cat_id' => ['required'],
+                'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
+            ]);
+
+            if ($validation->fails()) {
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Failed to add data',
+                    'error' => $error
+                ], 'Failed to add data', 422);
+            } else {
+                if ($request->photo && $request->photo->isValid()) {
+                    $fileName = 'photo-' . '-' . time() . '.' . $request->photo->extension();
+                    $request->photo->storeAs('public/album', $fileName);
+                    $path = "album/$fileName";
+                }
+                $album = Album::create([
+                    'user_id' => $request->user()->id,
+                    'cat_id' => $request->cat_id,
+                    'photo' => $path
+                ]);
+                return ResponseFormatter::success($album, 'Data added successfully');
+            }
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
+    public function album(Request $request)
+    {
+        $album = Album::where([
+            ['user_id',$request->input('user_id')],
+            ['cat_id',$request->input('cat_id')],
+        ])->get();
+        return ResponseFormatter::success($album, 'User data retrieved successfully');
     }
 
     public function destroy(Request $request){
