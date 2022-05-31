@@ -21,8 +21,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function(){
-    Route::get('user',[UserController::class,'show']);
+    Route::get('user',[UserController::class,'all']);
     Route::post('user', [UserController::class,'profile']);
+    Route::post('user/email', [UserController::class,'changeEmail']);
+    Route::post('user/password', [UserController::class,'changePassword']);
+    Route::delete('user/delete', [UserController::class,'destroy']);
+    Route::post('change',[UserController::class,'changePhoto']);
     Route::post('logout',[UserController::class,'logout']);
 
     // cat
@@ -31,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('create',[CatController::class,'store']);
         Route::delete('delete',[CatController::class,'destroy']);
         Route::post('update',[CatController::class,'update']);
+        Route::post('album',[CatController::class,'createAlbum']);
+        Route::get('album',[CatController::class,'album']);
     });
 
     // Posts
