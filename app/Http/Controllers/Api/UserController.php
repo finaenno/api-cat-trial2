@@ -63,7 +63,7 @@ class UserController extends Controller
                 ],'Authentication Failed', 500);
             }
 
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->withCount('posts','cats')->first();
 
             if(!Hash::check($request->password, $user->password,[])){
                 throw new \Exception('Invalid Credentials');
@@ -84,9 +84,39 @@ class UserController extends Controller
         }
     }
 
-    public function show(Request $request){
-        $user = User::with('cats','posts','followers')->find($request->user());
-        return ResponseFormatter::success($user, 'User data retrieved successfully');
+    public function all(Request $request)
+    {
+        $id = $request->input('id');
+        $name = $request->input('name');
+
+        if ($id) {
+            $user = User::withCount(['posts', 'cats'])->with(['posts', 'cats'])->find($id);
+            if ($user) {
+                return ResponseFormatter::success(
+                    $user,
+                    'User data successfully retrieved'
+                );
+            } else {
+                return ResponseFormatter::error(
+                    null,
+                    'User data no available',
+                    404
+                );
+            }
+        }
+
+        $user = User::withCount(['posts', 'cats'])->with(['posts', 'cats']);
+
+
+
+        if ($name) {
+            $user->where('name', 'like', '%' . $name . '%');
+        }
+
+        return ResponseFormatter::success(
+            $user->get(),
+            'User data successfully retrieved'
+        );
     }
 
     public function profile(Request $request){
@@ -94,9 +124,7 @@ class UserController extends Controller
             $validation = Validator::make($request->all(),[
                 'name' => ['required', 'string', 'max:255'],
                 'username' => ['required', 'string', 'max:255', 'unique:users,id,'.$request->user()->id],
-                'phone_number' => ['required', 'string', 'max:255'],
-                'email' => ['email', 'required', 'string', 'max:255', 'unique:users,id,' . $request->user()->id],
-                'profile_photo_path' => ['nullable','image']
+                'bio' => ['required', 'string', 'max:100'],
             ]);
 
             if($validation->fails()){
@@ -109,11 +137,90 @@ class UserController extends Controller
                 $user = User::find($request->user()->id);
                 $user->name = $request->name;
                 $user->username = $request->username;
-                $user->phone_number = $request->phone_number;
+                $user->bio = $request->bio;
+                $user->update();
+                return ResponseFormatter::success($user, 'Profile Updated');
+            }
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
+    public function changeEmail(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'max:255', 'email']
+            ]);
+
+            if ($validation->fails()) {
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Email Failed to change',
+                    'error' => $error
+                ], 'Email Failed to change', 422);
+            } else {
+                $user = User::find($request->user()->id);
                 $user->email = $request->email;
-                if($request->profile_photo_path && $request->profile_photo_path->isValid()){
-                    $slug = Str::slug($request->username);
-                    $fileName = 'photo-'.$slug.'-'.time().'.'.$request->profile_photo_path->extension();
+                $user->update();
+                return ResponseFormatter::success($user, 'Email Updated');
+            }
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'password' => ['required', 'string', new Password]
+            ]);
+
+            if ($validation->fails()) {
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Password Failed to change',
+                    'error' => $error
+                ], 'Password Failed to change', 422);
+            } else {
+                $user = User::find($request->user()->id);
+                $user->password = Hash::make($request->password);
+                $user->update();
+                return ResponseFormatter::success($user, 'Password Updated');
+            }
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
+    public function changePhoto(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'profile_photo_path' => ['nullable', 'image']
+            ]);
+
+            if ($validation->fails()) {
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Profile Failed to change',
+                    'error' => $error
+                ], 'Profile Failed to change', 422);
+            } else {
+                $user = User::find($request->user()->id);
+                if ($request->profile_photo_path && $request->profile_photo_path->isValid()) {
+                    $slug = Str::slug($request->user()->username);
+                    $fileName = $request->profile_photo_path->getClientOriginalName().'.' . $request->profile_photo_path->extension();
                     $request->profile_photo_path->storeAs('public/profile-photos', $fileName);
                     $path = "profile-photos/$fileName";
                     $user->profile_photo_path = $path;
@@ -126,6 +233,27 @@ class UserController extends Controller
                 'message' => 'Something went wrong',
                 'error' => $error
             ], 'Authentication Failed', 500);
+        }
+    }
+
+    public function destroy(Request $request)
+    {
+        $id = $request->input('id');
+
+        if ($id) {
+            $user = User::destroy($id);
+            if ($user) {
+                return ResponseFormatter::success(
+                    $user,
+                    'User deleted successfully'
+                );
+            } else {
+                return ResponseFormatter::error(
+                    null,
+                    'User data no available',
+                    404
+                );
+            }
         }
     }
 
