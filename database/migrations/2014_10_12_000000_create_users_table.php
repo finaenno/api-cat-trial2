@@ -22,11 +22,10 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone_number');
             $table->string('bio')->nullable();
-            $table->double('lat', 10,7)->nullable();
-            $table->double('lon', 10,7)->nullable();
             $table->boolean('is_admin')->default(0);
             $table->rememberToken();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->integer('following')->default(0);
             $table->timestamps();
         });
     }

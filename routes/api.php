@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\Api\CatController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\LoveController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MessagesController;
+use App\Http\Controllers\Api\VeterinaryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('change',[UserController::class,'changePhoto']);
     Route::post('logout',[UserController::class,'logout']);
 
+    Route::get('veterinary', [VeterinaryController::class,'all']);
+
     // cat
     Route::prefix('cat/')->group(function(){
         Route::get('all',[CatController::class,'all']);
@@ -37,6 +41,15 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('update',[CatController::class,'update']);
         Route::post('album',[CatController::class,'createAlbum']);
         Route::get('album',[CatController::class,'album']);
+    });
+
+    // Follow
+    Route::prefix('follow/')->group(function(){
+        Route::get('all',[FollowController::class,'all']);
+        Route::get('follower',[FollowController::class,'follower']);
+        Route::get('following',[FollowController::class,'following']);
+        Route::post('create',[FollowController::class,'store']);
+        Route::delete('delete',[FollowController::class,'destroy']);
     });
 
     // Posts

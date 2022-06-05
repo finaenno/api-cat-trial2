@@ -16,4 +16,9 @@ class UserFollower extends Model
     public function user(){
         return $this->belongsTo('App\Models\User');
     }
+
+    public function follower()
+    {
+        return $this->belongsTo('App\Models\User','follower_id','id');
+    }
 }

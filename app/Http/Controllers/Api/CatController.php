@@ -77,9 +77,11 @@ class CatController extends Controller
                 'breed' => ['required', 'string', 'max:255'],
                 'gender' => ['required', 'max:255'],
                 'color' => ['required', 'string', 'max:255'],
-                'weight' => ['required','regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
+                'eye_color' => ['required', 'string', 'max:255'],
+                'hair_color' => ['required', 'string', 'max:255'],
+                'ear_shape' => ['required', 'string', 'max:255'],
+                'weight' => ['required'],
                 'age' => ['required', 'integer'],
-                'story' => ['required', 'string', 'max:255'],
                 'photo' => ['required','image','mimes:jpeg,png,jpg,svg|max:2048'],
             ]);
 
@@ -102,10 +104,14 @@ class CatController extends Controller
                     'breed' => $request->breed,
                     'gender' => $request->gender,
                     'color' => $request->color,
+                    'eye_color' => $request->eye_color,
+                    'hair_color' => $request->hair_color,
+                    'ear_shape' => $request->ear_shape,
                     'weight' => $request->weight,
                     'age' => $request->age,
-                    'story' => $request->story,
-                    'photo' => $path
+                    'photo' => $path,
+                    'lat' => $request->lat,
+                    'lon' => $request->lon
                 ]);
                 return ResponseFormatter::success($cat, 'Data added successfully');
             }
@@ -193,9 +199,11 @@ class CatController extends Controller
                     'breed' => ['required', 'string', 'max:255'],
                     'gender' => ['required', 'max:255', 'in:male,female'],
                     'color' => ['required', 'string', 'max:255'],
+                    'eye_color' => ['required', 'string', 'max:255'],
+                    'hair_color' => ['required', 'string', 'max:255'],
+                    'ear_shape' => ['required', 'string', 'max:255'],
                     'weight' => ['required', 'regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
                     'age' => ['required', 'integer'],
-                    'story' => ['required', 'string', 'max:255'],
                     'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
                 ]);
                 if ($validation->fails()) {
@@ -210,9 +218,11 @@ class CatController extends Controller
                         $cat->breed = $request->breed;
                         $cat->gender = $request->gender;
                         $cat->color = $request->color;
+                        $cat->eye_color = $request->eye_color;
+                        $cat->hair_color = $request->hair_color;
+                        $cat->ear_shape = $request->ear_shape;
                         $cat->weight = $request->weight;
                         $cat->age = $request->age;
-                        $cat->story = $request->story;
                         $cat->photo = $request->photo;
                         if ($request->photo && $request->photo->isValid()) {
                             $slug = Str::slug($request->name);
@@ -221,6 +231,8 @@ class CatController extends Controller
                             $path = "cats/$fileName";
                             $cat->photo = $path;
                         }
+                        $cat->lat = $request->lat;
+                        $cat->lon = $request->lon;
                         $cat->update();
                         return ResponseFormatter::success(
                             $cat,

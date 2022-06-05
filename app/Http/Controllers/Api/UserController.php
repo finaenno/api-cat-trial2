@@ -63,7 +63,7 @@ class UserController extends Controller
                 ],'Authentication Failed', 500);
             }
 
-            $user = User::where('email', $request->email)->withCount('posts','cats')->first();
+            $user = User::where('email', $request->email)->withCount('posts','cats', 'followers')->first();
 
             if(!Hash::check($request->password, $user->password,[])){
                 throw new \Exception('Invalid Credentials');
@@ -105,10 +105,7 @@ class UserController extends Controller
             }
         }
 
-        $user = User::withCount(['posts', 'cats'])->with(['posts', 'cats']);
-
-
-
+        $user = User::withCount(['posts', 'cats','followers'])->with(['posts', 'cats']);
         if ($name) {
             $user->where('name', 'like', '%' . $name . '%');
         }

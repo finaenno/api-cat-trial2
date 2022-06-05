@@ -20,10 +20,14 @@ return new class extends Migration
             $table->string('breed')->nullable();
             $table->string('gender');
             $table->string('color');
+            $table->string('eye_color');
+            $table->string('hair_color');
+            $table->string('ear_shape');
             $table->double('weight',5,2);
             $table->integer('age');
-            $table->text('story');
             $table->string('photo');
+            $table->double('lat', 15, 10)->nullable();
+            $table->double('lon', 15, 10)->nullable();
             $table->timestamps();
         });
     }
