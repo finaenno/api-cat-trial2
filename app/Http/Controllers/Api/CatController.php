@@ -70,103 +70,47 @@ class CatController extends Controller
         );
     }
 
-    public function store(Request $request){
-        try {
-            $validation = Validator::make($request->all(), [
-                'name' => ['required', 'string', 'max:255'],
-                'breed' => ['required', 'string', 'max:255'],
-                'gender' => ['required', 'max:255'],
-                'color' => ['required', 'string', 'max:255'],
-                'eye_color' => ['required', 'string', 'max:255'],
-                'hair_color' => ['required', 'string', 'max:255'],
-                'ear_shape' => ['required', 'string', 'max:255'],
-                'weight' => ['required'],
-                'age' => ['required', 'integer'],
-                'photo' => ['required','image','mimes:jpeg,png,jpg,svg|max:2048'],
-            ]);
+    public function search(Request $request){
+        $breed = $request->input('breed');
+        $color = $request->input('color');
+        $eye_color = $request->input('eye_color');
+        $hair_color = $request->input('hair_color');
+        $ear_shape = $request->input('ear_shape');
 
-            if($validation->fails()){
-                $error = $validation->errors()->all()[0];
-                return ResponseFormatter::error([
-                    'message' => 'Failed to add data',
-                    'error' => $error
-                ], 'Failed to add data', 422);
-            }else{
-                if ($request->photo && $request->photo->isValid()) {
-                    $slug = Str::slug($request->name);
-                    $fileName = 'photo-' . $slug . '-' . time() . '.' . $request->photo->extension();
-                    $request->photo->storeAs('public/cats', $fileName);
-                    $path = "cats/$fileName";
-                }
-                $cat = Cats::create([
-                    'name' => $request->name,
-                    'user_id' => $request->user()->id,
-                    'breed' => $request->breed,
-                    'gender' => $request->gender,
-                    'color' => $request->color,
-                    'eye_color' => $request->eye_color,
-                    'hair_color' => $request->hair_color,
-                    'ear_shape' => $request->ear_shape,
-                    'weight' => $request->weight,
-                    'age' => $request->age,
-                    'photo' => $path,
-                    'lat' => $request->lat,
-                    'lon' => $request->lon
-                ]);
-                return ResponseFormatter::success($cat, 'Data added successfully');
-            }
+        $cat = Cats::with('user');
 
-        } catch (Exception $error) {
-            return ResponseFormatter::error([
-                'message' => 'Something went wrong',
-                'error' => $error
-            ], 'Authentication Failed', 500);
+        if($breed){
+            $cat = Cats::where('breed', $breed);
         }
-    }
 
-    public function createAlbum(Request $request)
-    {
-        try {
-            $validation = Validator::make($request->all(), [
-                'user_id' => ['required'],
-                'cat_id' => ['required'],
-                'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
-            ]);
-
-            if ($validation->fails()) {
-                $error = $validation->errors()->all()[0];
-                return ResponseFormatter::error([
-                    'message' => 'Failed to add data',
-                    'error' => $error
-                ], 'Failed to add data', 422);
-            } else {
-                if ($request->photo && $request->photo->isValid()) {
-                    $fileName = 'photo-' . '-' . time() . '.' . $request->photo->extension();
-                    $request->photo->storeAs('public/album', $fileName);
-                    $path = "album/$fileName";
-                }
-                $album = Album::create([
-                    'user_id' => $request->user()->id,
-                    'cat_id' => $request->cat_id,
-                    'photo' => $path
-                ]);
-                return ResponseFormatter::success($album, 'Data added successfully');
-            }
-        } catch (Exception $error) {
-            return ResponseFormatter::error([
-                'message' => 'Something went wrong',
-                'error' => $error
-            ], 'Authentication Failed', 500);
+        if($color){
+            $cat = Cats::where('color','LIKE','%'.$color.'%');
         }
-    }
 
-    public function album(Request $request)
-    {
-        $album = Album::where([
-            ['user_id',$request->input('user_id')],
-            ['cat_id',$request->input('cat_id')],
-        ])->get();
-        return ResponseFormatter::success($album, 'User data retrieved successfully');
+        if ($eye_color) {
+            $cat = Cats::where('eye_color', 'LIKE', '%' . $eye_color . '%');
+        }
+
+        if ($hair_color) {
+            $cat = Cats::where('hair_color', 'LIKE', '%' . $hair_color . '%');
+        }
+
+        if ($ear_shape) {
+            $cat = Cats::where('ear_shape', 'LIKE', '%' . $ear_shape . '%');
+        }
+
+        if ($cat) {
+            return ResponseFormatter::success(
+                $cat->get(),
+                'cat data successfully retrieved'
+            );
+        } else {
+            return ResponseFormatter::error(
+                null,
+                'Cat data no available',
+                404
+            );
+        }
     }
 
     public function destroy(Request $request){

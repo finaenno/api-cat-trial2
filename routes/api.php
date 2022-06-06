@@ -36,11 +36,10 @@ Route::middleware('auth:sanctum')->group(function(){
     // cat
     Route::prefix('cat/')->group(function(){
         Route::get('all',[CatController::class,'all']);
+        Route::get('search',[CatController::class,'search']);
         Route::post('create',[CatController::class,'store']);
         Route::delete('delete',[CatController::class,'destroy']);
         Route::post('update',[CatController::class,'update']);
-        Route::post('album',[CatController::class,'createAlbum']);
-        Route::get('album',[CatController::class,'album']);
     });
 
     // Follow
