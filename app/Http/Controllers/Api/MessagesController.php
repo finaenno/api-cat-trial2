@@ -19,39 +19,67 @@ class MessagesController extends Controller
     public function index(Request $request)
     {
         $id = $request->input('id');
-        $limit = $request->input('limit');
         $receiver_user_id = $request->input('receiver_user_id');
-        $messages = $request->input('messages');
+        $sender_user_id = $request->input('sender_user_id');
 
         if ($id) {
-            $messagess = Messages::with('user')->find($id);
+            $messagess = Messages::with('room')->find($id);
             if ($messagess) {
                 return ResponseFormatter::success(
                     $messagess,
-                    'Comment data successfully retrieved'
+                    'Message data successfully retrieved'
                 );
             } else {
                 return ResponseFormatter::error(
                     null,
-                    'Comment data no available',
+                    'Message data no available',
                     404
                 );
             }
         }
 
-        $messagess = Messages::with('user');
+        $messagess = Messages::with('room');
 
         if ($receiver_user_id) {
             $messagess->where('receiver_user_id', $receiver_user_id);
         }
 
-        if ($messages) {
-            $messagess->where('messages', $messages);
+        if ($sender_user_id) {
+            $messagess->where('sender_user_id', $sender_user_id);
         }
 
         return ResponseFormatter::success(
-            $messagess->paginate($limit),
-            'Comment data successfully retrieved'
+            $messagess->get(),
+            'Messages data successfully retrieved'
+        );
+    }
+
+    public function room(Request $request)
+    {
+        $sender_user_id = $request->input('sender_user_id');
+
+        if ($sender_user_id) {
+            $messagess = Messages::with('user')
+            ->where('sender_user_id',$sender_user_id)
+            ->groupBy('receiver_user_id')
+            ->get();
+            if ($messagess) {
+                return ResponseFormatter::success(
+                    $messagess,
+                    'Message data successfully retrieved'
+                );
+            } else {
+                return ResponseFormatter::error(
+                    null,
+                    'Message data no available',
+                    404
+                );
+            }
+        }
+        return ResponseFormatter::error(
+            null,
+            'Sender Not Available',
+            404
         );
     }
 
@@ -77,7 +105,6 @@ class MessagesController extends Controller
             $validation = Validator::make($request->all(), [
                 'receiver_user_id' => ['required'],
                 'messages' => ['required'],
-                
             ]);
 
             if($validation->fails()){
@@ -87,15 +114,13 @@ class MessagesController extends Controller
                     'error' => $error
                 ], 'Failed to add data', 422);
             }else{
-                $messages = messages::updateOrCreate([
-                    'receiver_user_id' => $request->receiver_user_id
-                ],[
+                $messages = Messages::create([
                     'receiver_user_id' => $request->receiver_user_id,
                     'sender_user_id' => $request->user()->id,
-                    'messages' => $request->messages                   
+                    'messages' => $request->messages
                 ]);
                 return ResponseFormatter::success($messages, 'Data added successfully');
-            }                                                           
+            }
 
         } catch (Exception $error) {
             return ResponseFormatter::error([

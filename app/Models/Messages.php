@@ -15,7 +15,12 @@ class Messages extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo('App\Models\User','receiver_user_id');
+    }
+
+    public function room()
+    {
+        return $this->belongsTo('App\Models\User', 'sender_user_id');
     }
 
     // protected $fillable = [
@@ -26,7 +31,7 @@ class Messages extends Model
     // public function receiver(){
     //     return $this->belongsTo(User::class, 'receiver_user_id', 'id');
     // }
-    
+
     // public function sender(){
     //     return $this->belongsTo(User::class, 'sender_user_id', 'id');
     // }
