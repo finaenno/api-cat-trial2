@@ -85,6 +85,8 @@ class CatController extends Controller
                 'age' => ['required', 'integer'],
                 // 'story' => ['required', 'string', 'max:255'],
                 'photo' => ['required','image','mimes:jpeg,png,jpg,svg|max:2048'],
+                'isWhite' => ['required', 'integer'],
+                'story' => ['required'],
             ]);
 
             if ($validation->fails()) {
@@ -113,7 +115,9 @@ class CatController extends Controller
                     'age' => $request->age,
                     'photo' => $path,
                     'lat' => $request->lat,
-                    'lon' => $request->lon
+                    'lon' => $request->lon,
+                    'isWhite' => $request->isWhite,
+                    'story' => $request->story
                 ]);
                 return ResponseFormatter::success($cat, 'Data added successfully');
             }
@@ -128,9 +132,8 @@ class CatController extends Controller
     public function search(Request $request){
         $breed = $request->input('breed');
         $color = $request->input('color');
-        $eye_color = $request->input('eye_color');
-        $hair_color = $request->input('hair_color');
-        $ear_shape = $request->input('ear_shape');
+        $gender = $request->input('gender');
+        $is_white = $request->input('is_white');
 
         $cat = Cats::with('user');
 
@@ -139,24 +142,16 @@ class CatController extends Controller
         }
 
         if($color){
-            $cat = Cats::where('color','LIKE','%'.$color.'%');
+            $cat = Cats::where('color',$color);
         }
 
-        if ($eye_color) {
-            $cat = Cats::where('eye_color', 'LIKE', '%' . $eye_color . '%');
-        }
-
-        if ($hair_color) {
-            $cat = Cats::where('hair_color', 'LIKE', '%' . $hair_color . '%');
-        }
-
-        if ($ear_shape) {
-            $cat = Cats::where('ear_shape', 'LIKE', '%' . $ear_shape . '%');
+        if ($is_white) {
+            $cat = Cats::where('isWhite', $is_white);
         }
 
         if ($cat) {
             return ResponseFormatter::success(
-                $cat->get(),
+                $cat->where('gender', '!=', $gender)->get(),
                 'cat data successfully retrieved'
             );
         } else {

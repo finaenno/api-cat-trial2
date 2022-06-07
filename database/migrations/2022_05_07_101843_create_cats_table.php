@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('photo');
             $table->double('lat', 15, 10)->nullable();
             $table->double('lon', 15, 10)->nullable();
+            $table->integer('isWhite');
+            $table->text('story');
             $table->timestamps();
         });
     }
