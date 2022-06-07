@@ -70,6 +70,61 @@ class CatController extends Controller
         );
     }
 
+    public function store(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+               'name' => ['required', 'string', 'max:255'],
+                'breed' => ['required', 'string', 'max:255'],
+                'gender' => ['required', 'max:255'],
+                'color' => ['required', 'string', 'max:255'],
+                'eye_color' => ['required', 'string', 'max:255'],
+                'hair_color' => ['required', 'string', 'max:255'],
+                'ear_shape' => ['required', 'string', 'max:255'],
+                'weight' => ['required','regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
+                'age' => ['required', 'integer'],
+                // 'story' => ['required', 'string', 'max:255'],
+                'photo' => ['required','image','mimes:jpeg,png,jpg,svg|max:2048'],
+            ]);
+
+            if ($validation->fails()) {
+                $error = $validation->errors()->all()[0];
+                return ResponseFormatter::error([
+                    'message' => 'Failed to add data',
+                    'error' => $error
+                ], 'Failed to add data', 422);
+            } else {
+                if ($request->photo && $request->photo->isValid()) {
+                    $slug = Str::slug($request->user()->username);
+                    $fileName = 'photo-' . $slug . '-' . time() . '.' . $request->photo->extension();
+                    $request->photo->storeAs('public/cats', $fileName);
+                    $path = "cats/$fileName";
+                }
+                $cat = Cats::create([
+                    'user_id' => $request->user()->id,
+                    'name' => $request->name,
+                    'breed' => $request->breed,
+                    'gender' => $request->gender,
+                    'color' => $request->color,
+                    'eye_color' => $request->eye_color,
+                    'hair_color' => $request->hair_color,
+                    'ear_shape' => $request->ear_shape,
+                    'weight' => $request->weight,
+                    'age' => $request->age,
+                    'photo' => $path,
+                    'lat' => $request->lat,
+                    'lon' => $request->lon
+                ]);
+                return ResponseFormatter::success($cat, 'Data added successfully');
+            }
+        } catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
     public function search(Request $request){
         $breed = $request->input('breed');
         $color = $request->input('color');
