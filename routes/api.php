@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LoveController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MessagesController;
+use App\Http\Controllers\Api\RoomMessageController;
 use App\Http\Controllers\Api\VeterinaryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -72,13 +73,6 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('create', [CommentController::class, 'store']);
         Route::post('update', [CommentController::class, 'update']);
         Route::delete('delete', [CommentController::class, 'destroy']);
-    });
-
-    //Messages
-    Route::prefix('messages/')->group(function(){
-        Route::get('all', [MessagesController::class, 'index']);
-        Route::get('room', [MessagesController::class, 'room']);
-        Route::post('create', [MessagesController::class, 'store']);
     });
 });
 
