@@ -14,7 +14,6 @@ class LoveController extends Controller
     public function all(Request $request)
     {
         $id = $request->input('id');
-        $limit = $request->input('limit');
         $post_id = $request->input('post_id');
         $user_id = $request->input('user_id');
 
@@ -45,7 +44,7 @@ class LoveController extends Controller
         }
 
         return ResponseFormatter::success(
-            $love->paginate($limit),
+            $love->get(),
             'Love data successfully retrieved'
         );
     }

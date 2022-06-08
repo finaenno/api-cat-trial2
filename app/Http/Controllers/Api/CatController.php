@@ -83,7 +83,6 @@ class CatController extends Controller
                 'ear_shape' => ['required', 'string', 'max:255'],
                 'weight' => ['required','regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
                 'age' => ['required', 'integer'],
-                // 'story' => ['required', 'string', 'max:255'],
                 'photo' => ['required','image','mimes:jpeg,png,jpg,svg|max:2048'],
                 'isWhite' => ['required', 'integer'],
                 'story' => ['required'],
@@ -191,7 +190,7 @@ class CatController extends Controller
                 $validation = Validator::make($request->all(), [
                     'name' => ['required', 'string', 'max:255'],
                     'breed' => ['required', 'string', 'max:255'],
-                    'gender' => ['required', 'max:255', 'in:male,female'],
+                    'gender' => ['required', 'max:255'],
                     'color' => ['required', 'string', 'max:255'],
                     'eye_color' => ['required', 'string', 'max:255'],
                     'hair_color' => ['required', 'string', 'max:255'],
@@ -199,6 +198,8 @@ class CatController extends Controller
                     'weight' => ['required', 'regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
                     'age' => ['required', 'integer'],
                     'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,svg|max:2048'],
+                    'isWhite' => ['required', 'integer'],
+                    'story' => ['required'],
                 ]);
                 if ($validation->fails()) {
                     $error = $validation->errors()->all()[0];
