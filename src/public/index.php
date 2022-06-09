@@ -54,9 +54,9 @@ $response = $kernel->handle(
 
 $kernel->terminate($request, $response);
 
-$username = 'mysql';
+$username = 'catped-user';
 $password = 'finaenno04';
-$dbName = 'mysql';
+$dbName = 'laravel';
 $connectionName = getenv("cat-pedigree-trial:asia-southeast2:cat-pedigree-trial");
 $socketDir = getenv('DB_SOCKET_DIR') ?: '/cloudsql';
 
