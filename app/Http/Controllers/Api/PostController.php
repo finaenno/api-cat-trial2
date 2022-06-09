@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Google\Cloud\Storage\StorageClient;
 
 class PostController extends Controller
 {
@@ -57,6 +58,13 @@ class PostController extends Controller
                 'description' => ['required', 'string'],
             ]);
 
+            // $storage = new StorageClient([
+            //     'keyFilePath' => getcwd(). '/../flowing-silo-350506-e0fbc96d1dcf.json',
+            // ]);
+
+            // $bucketName = 'cat-pedigree-posts';
+            // $bucket = $storage->bucket($bucketName);
+
             if ($validation->fails()) {
                 $error = $validation->errors()->all()[0];
                 return ResponseFormatter::error([
@@ -69,6 +77,13 @@ class PostController extends Controller
                     $fileName = 'photo-' . $slug . '-' . time() . '.' . $request->photo->extension();
                     $request->photo->storeAs('public/posts', $fileName);
                     $path = "posts/$fileName";
+                    // $request = $bucket->upload(
+                    //     fopen($fileName, 'r'),
+                    //     [
+                    //         'predefinedAcl' => 'publicRead'
+                    //     ]
+                    // );
+                    // echo "File uploaded successfully. File path is: https://storage.googleapis.com/$bucketName/$fileName";
                 }
                 $post = Post::create([
                     'user_id' => $request->user()->id,
