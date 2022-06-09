@@ -67,6 +67,6 @@ $app->singleton(
             );
 
             // Connect to the database.
-            $conn = new PDO($dsn, $username, $password, $conn_config);
+            $app = new PDO($dsn, $username, $password, $conn_config);
 
 return $app;
