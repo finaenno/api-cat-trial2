@@ -53,20 +53,3 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
-
-$username = 'catped-user';
-$password = 'finaenno04';
-$dbName = 'laravel';
-$connectionName = getenv("cat-pedigree-trial:asia-southeast2:cat-pedigree-trial");
-$socketDir = getenv('DB_SOCKET_DIR') ?: '/cloudsql';
-
-// Connect using UNIX sockets
-$dsn = sprintf(
-    'mysql:dbname=%s;unix_socket=%s/%s',
-    $dbName,
-    $socketDir,
-    $connectionName
-);
-
-// Connect to the database.
-$conn = new PDO($dsn, $username, $password, $conn_config);
